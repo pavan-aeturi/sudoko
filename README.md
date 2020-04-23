@@ -4,4 +4,4 @@
                 urllib3
                 pygame
                 
-   This gives the run time view of back tracking algorithm of sudoko
+   This gives the run time view of solving sudoko using back tracking algorithm
