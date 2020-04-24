@@ -1,4 +1,4 @@
-# sudoko
+# sudoku
 
   dependencies: json
                 urllib3
