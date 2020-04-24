@@ -5,4 +5,4 @@
                 pygame
                 
    The project is supported for python 3.7 or above
-   This gives the run time view of solving sudoko using illustrating back tracking algorithm by using http://www.cs.utep.edu/cheon/ws/sudoku/new/ api for difficulties of questions to simulate
+   This gives the run time view of solving sudoko illustrating back tracking algorithm by using http://www.cs.utep.edu/cheon/ws/sudoku/new/ api for difficulties of questions to simulate
