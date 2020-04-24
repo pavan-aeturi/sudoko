@@ -9,4 +9,4 @@
    
 steps to follow:   
    Downlaad or clone the repository to your local machine
-  and run windows.py on command line or prompt to launch the project
+  and run window.py on command line or prompt to launch the project
