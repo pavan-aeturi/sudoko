@@ -1,118 +1,122 @@
-
 import pygame
+from sudoko import main
+import urllib.request
+import json
 from button import button
+BLUE=[106,159,181]
 
-grid=[[[0 for i in range(3)] for j in range(3)]for k in range(9)]
-realEmpty=[]
+c=(106,159,181)
 
-def text_objects(text, font):
-    textSurface = font.render(text, True, (0,0,0))
-    return textSurface, textSurface.get_rect()
 
-def printer(window):
-	x=142
-	y=140
-	for i in range(9):
-		for j in range(3):
-			for k in range(3):
-				largeText = pygame.font.Font('freesansbold.ttf',35)
-				if grid[i][j][k] != 0:
-					text=str(grid[i][j][k])
-				else:
-					text=" "
-				TextSurf, TextRect = text_objects(text, largeText)
-				pygame.draw.rect(window,(255,255,255),((y+120*j+k*40-12),(x+40*i-18),30,33))	
-			
-				TextRect.center = ((y+120*j+k*40),(x+40*i))
-				window.blit(TextSurf, TextRect)
-				pygame.display.update()
+pygame.init()
+window = pygame.display.set_mode((600,600))
+pygame.display.set_caption("sudoko")
 
-def checkincube(num,lis):
-	x=(int(lis[0]/3))*3
-	for i in range(x,x+3):
-		for j in range(3):
-			if grid[i][lis[1]][j] == num:
-				return False
-	return True
-def isApproved(num,lis):
-	x=lis[0]
-	y=lis[1]
-	z=lis[2]
-	for i in range(3):
-		for j in range(3):
-			if grid[x][i][j] == num:
-				return False
-	for i in range(9):
-		if grid[i][y][z] == num:
-			return False
-	return checkincube(num,lis)
+window.fill((255,255,255))
+pygame.display.update()
+pygame.display.flip()
 
-def presentNumber(lis):
-	return grid[lis[0]][lis[1]][lis[2]]
-def getEmpty():
-	realEmpty.clear()
-	for i in range(9):
-		for j in range(3):
-			for k in range(3):
-				if grid[i][j][k] == 0:
-					realEmpty.append([i,j,k])
-def storeVal(j,lis):
-	grid[lis[0]][lis[1]][lis[2]]=j
-	return
-def solve(window):
-	i=0
-	while i  < len(realEmpty):
-		k=presentNumber(realEmpty[i])
-		for j in range(presentNumber(realEmpty[i])+1,10):
-			if isApproved(j,realEmpty[i]):
-				storeVal(j,realEmpty[i])
-				try:
-					printer(window)
-				except:
-					return 1
-				break
-		if presentNumber(realEmpty[i]) == k:
-			storeVal(0,realEmpty[i])
-			try:
-				printer(window)
-			except:
-				return 1
-			i=i-1
-		else:
-			i=i+1
-		if i<0:
-			return
-		for event in pygame.event.get():
-			if event.type==pygame.QUIT:
-				pygame.quit()
-				return 1
-	return 0
-def loadSquares(squares):
-	for i in range(9):
-		for j in range(3):
-			for k in range(3):
-				grid[i][j][k]=0
-	for box in squares:
-		x=box["x"]
-		y=int(box["y"]/3)
-		z=box["y"]%3
-		grid[x][y][z]=box["value"]
 
-def main(squares,window,simulate,restart):
+def index():
+	window.fill((255,255,255))
+	hold_on=button(BLUE,150,300,300,50,"wait a moment")
+	hold_on.draw(window)
+
+	simulate=button(BLUE,120,500,150,50,"simulate")
+	restart=button(BLUE,360,500,150,50,"restart")
+
+	pygame.display.update()
+	window.fill((255,255,255))
 	flag=0
-	loadSquares(squares)
-	getEmpty()
-	printer(window)
-	check=True
-	while check:
-		for event in pygame.event.get():
-			if event.type==pygame.MOUSEBUTTONDOWN and event.button == 1:
-				if simulate.isOver(pygame.mouse.get_pos()):
-					check=False
+	try:
+		url_request=urllib.request.urlopen("http://www.cs.utep.edu/cheon/ws/sudoku/new/?size=9&level=3")
+		squares=json.load(url_request)["squares"]
+
+		choose_level=button(BLUE,50,300,500,50,"press any num between 1 & 3 to simulate level",fontsize=15)
+		choose_level.draw(window)
+		pygame.display.update()
+
+		run=True
+
+		while run:
+			for event in pygame.event.get():
+				if event.type == pygame.QUIT:
+					flag=1
+					run=False
+					pygame.quit()
 					break
-				if restart.isOver(pygame.mouse.get_pos()):
-					return flag
-			if event.type==pygame.QUIT:
-				pygame.quit()
-				return 1
-	return solve(window)
+				if event.type == pygame.KEYDOWN:
+					if event.key == pygame.K_1:
+					    level=1
+					    run=False
+					    break
+					if event.key == pygame.K_2:
+					    level=2
+					    run=False
+					    break
+					if event.key == pygame.K_3:
+					    level=3
+					    run=False
+					    break
+		if not flag:
+			window.fill((255,255,255))
+
+			loading=button(BLUE,150,300,300,50,"loading...")
+			loading.draw(window)
+			pygame.display.update()
+
+			url_request=urllib.request.urlopen("http://www.cs.utep.edu/cheon/ws/sudoku/new/?size=9&level="+str(level))
+			squares=json.load(url_request)["squares"]
+
+			window.fill((255,255,255))
+		else:
+			raise Exception("yahoo")
+		
+	except:
+		if not flag:	
+			error=button(BLUE,150,300,300,50,"you are offline")
+			error.draw(window)
+			pygame.display.update()
+			run=True
+			while run:
+				for event in pygame.event.get():
+					if event.type==pygame.QUIT:
+						pygame.quit()
+						run=False
+					if not run:
+						break
+					if event.type==pygame.MOUSEBUTTONDOWN and event.button == 1 and restart.isOver(pygame.mouse.get_pos()):
+						index()
+	else:
+		for x in range(120,490,40):
+			if x%120 == 0:
+				continue
+			pygame.draw.line(window,c,(120,x),(480,x),2)
+			pygame.draw.line(window,c,(x,120),(x,480),2)
+			pygame.display.update()
+
+		for x in range(120,490,120):
+			pygame.draw.line(window,(0,255,0),(120,x),(480,x),2)
+			pygame.draw.line(window,(0,255,0),(x,120),(x,480),2)
+			pygame.display.update()
+
+		simulate.draw(window)
+		restart.draw(window)
+
+		pygame.display.update()
+		flagy=main(squares,window,simulate,restart)
+		if not flagy:	
+			run=True
+			while run:
+				for event in pygame.event.get():
+					if event.type==pygame.QUIT:
+						run=False
+						break
+					if event.type==pygame.MOUSEBUTTONDOWN and event.button == 1 and restart.isOver(pygame.mouse.get_pos()):
+						index()
+			pygame.quit()
+
+if(__name__== "__main__" ):
+	index()
+
+
