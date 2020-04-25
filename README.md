@@ -10,3 +10,5 @@
 steps to follow:   
    Downlaad or clone the repository to your local machine
   and run window.py on command line or prompt to launch the project
+
+DELAY variable in sudoko.py can be increased or decreased to see the algorithm working
