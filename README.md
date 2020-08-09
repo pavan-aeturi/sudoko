@@ -12,4 +12,4 @@ steps to follow:
   and run window.py on command line or prompt to launch the project
 
 DELAY variable in sudoko.py can be increased or decreased to see the algorithm working
-![alt text](https://github.com/pavan-aeturi/sudoku/blob/master/ezgif.com-video-to-gif.gif?raw=true)
+![alt text](https://github.com/pavan-aeturi/sudoko/blob/master/ezgif.com-video-to-gif.gif?raw=true)
